@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append("C:\\root_v5.34.34\\bin")
+sys.path.append("C:\\root_v5.34.34\\bin")		# only used in some Windows system, it has to do with ROOT behavior
 from ROOT import *
 import imp
 import time
@@ -76,7 +76,7 @@ def RunfileProcessing(filename):
 	print "We have ", len(data)/points_per_event, " events in this runfile"
 	return data
 
-
+# Currently not being used, implement this for exceptions.
 def SelectTree():
 	# # First of all, we need to test if the ROOT file exists, and if not, create it.
 	# treename = "..."
@@ -88,7 +88,7 @@ def SelectTree():
 
 	pass
 
-
+# Shifts a list of X elements by a positive or negative number, maintaining size and adding zeroes.
 def ShiftList_horizontally(list, shift):
 	shifted_list=[]
 	shift=int(shift)
@@ -105,7 +105,8 @@ def ShiftList_horizontally(list, shift):
 		return list
 	return shifted_list
 
-
+# Shifts a list of Y elements, by adding or subtracting the same value for all elements.
+# eg we can use this to calibrate for a constant offset.
 def ShiftList_vertically(list, shift):
 	print "Shift input list vertically, by", shift
 	shifted_list=[]
@@ -122,8 +123,8 @@ def SelectRunBackground():
 
 # Inputs -- Run#, Type of tree, Content to fetch
 # Outputs-- Just a list for now
-def FetchDataPoints(run, type, event):									# This actually works. Need to test case of event0 aka x'x axis
-	if event == '0':													# for some reason, if i call event0 from the code, it's erroneous.
+def FetchDataPoints(run, type, event):				# This actually works. Need to test case of event0 aka x'x axis
+	if event == '0':					# Construct a x'x axis			
 		list=[]
 		for i in xrange(points_per_event):
 			list.append(i)
@@ -133,12 +134,13 @@ def FetchDataPoints(run, type, event):									# This actually works. Need to te
 	
 	ROOTfilename = "Run_"+run+"_file.root"
 	ROOTfile = TFile (ROOTfilename, 'open')
-	# print TFile (ROOTfilename, 'open')								# Check if object is loaded on memory
+	# print TFile (ROOTfilename, 'open')				# Check if object is loaded on memory
 
 	treename = "Run_" + run + "_" + type + ".root"
 	tree1=ROOTfile.Get(treename)
-	# print ROOTfile.Get(treename)										# Check if object is loaded on memory
+	# print ROOTfile.Get(treename)					# Check if object is loaded on memory
 
+	# Type of data we request from the tree
 	if type == "stats":
 		leaf = "Run_"+run+"_"+event
 	elif type == "events":
@@ -164,7 +166,8 @@ def AdditionalBranches():
 	Backrun = str(Backrun)
 	Eventrun = runfile[-6:-4]
 
-	
+	# The following 50 lines of code are somewhat retarded, and should be changed to some (exec) function.
+	# Due to PyROOT behaving strangely, we leave them to be for now
 	Treefile1.Branch(runid+"_mean", InputArray1, runid+"_mean"+'/D' )
 	Treefile1.Branch(runid+"_rms", InputArray2, runid+"_rms"+'/D' )
 	Treefile1.Branch(runid+"_meanerror", InputArray3, runid+"_meanerror"+'/D' )
@@ -301,7 +304,7 @@ def AdditionalBranches():
 	items = len(mean_allevents0)
 	print len(rms_allevents0), "data in histogram"
 	print len(peak_list), "data in histogram"
-	for i in xrange(items):
+	for i in xrange(items):					# change all this to an exec statement
 		InputArray6[0] = mean_allevents0[i]
 		InputArray7[0] = rms_allevents0[i]
 		InputArray8[0] = mean_allevents1[i]
@@ -331,49 +334,9 @@ def AdditionalBranches():
 	
 	
 #========================================================================
-#===	all imports, declarations	=====================================
+#===	all imports, declarations	=================================
 #===	 and dependencies, above these lines	=========================
 #========================================================================
-
-
-#========================================================================
-#===	Example 4	=====================================================
-#========================================================================
-
-# # First Application
-# gROOT.Reset()
-
-# # Create a new canvas, and customize it.
-# c1 = TCanvas( 'c1', 'Dynamic Filling Example', 200, 10, 700, 500 )
-# c1.SetFillColor( 0 )
-# c1.GetFrame().SetFillColor( 10 )
-# c1.GetFrame().SetBorderSize( 6 )
-# c1.GetFrame().SetBorderMode( -1 )
-
-# # Create a histogram
-# # Taken from example
-# hpx    = TH1F( 'hpx', 'This is an example charge distribution', 100, 0.00001, 2)
-
-# for i in xrange(len(readd_list)):
-	# ChargeNTuple.Fill(float(readd_list[i]))
-# ChargeTree.Fill()
-	
-	
-# for item in readd_list:	
-	# hpx.Fill(float(item))
-# RunXXFile.Write()
-
-# # hpx.Fit("gaus")
-# # hpx.GetMean
-# # print "-->", gaus.GetParameter(0)
-# # print "-->", gaus.GetParameter(1)
-# # print "-->", gaus.GetParameter(2)
-
-# # hpx.Draw()
-# c1.Modified()
-# c1.Update()
-# # t = TBrowser()
-# raw_input("Press Enter to continue...")
 
 
 #=================================================================
